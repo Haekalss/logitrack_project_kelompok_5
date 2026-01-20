@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:p1/api_service.dart';
 import 'package:p1/auth_service.dart';
-import 'package:p1/delivery_task_model.dart';
+import 'package:provider/provider.dart';
+import 'package:p1/providers/delivery_task_provider.dart';
 import 'package:p1/login_page.dart';
 import 'package:p1/delivery_detail_page.dart';
 import 'package:p1/qr_scanner_page.dart';
@@ -14,18 +14,17 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  // instance ApiService
-  final ApiService _apiService = ApiService();
+  // instance AuthService
   final AuthService _authService = AuthService();
-  // future untuk hasil fetch
-  late Future<List<DeliveryTask>> _tasksFuture;
-
   @override
   void initState() {
     super.initState();
-    // panggil API
-    _tasksFuture = _apiService.fetchDeliveryTasks();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<DeliveryTaskProvider>(context, listen: false).fetchTasks();
+    });
   }
+
+  // initState above triggers provider fetch
 
   @override
   Widget build(BuildContext context) {
@@ -71,56 +70,48 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ],
       ),
-      // REPLACED: ListView statis -> FutureBuilder
-      body: FutureBuilder<List<DeliveryTask>>(
-        future: _tasksFuture,
-        builder: (context, snapshot) {
-          // loading
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          // error
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-          final data = snapshot.data;
-          // data ada & tidak kosong
-          if (data != null && data.isNotEmpty) {
-            return ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: data.length,
-              itemBuilder: (context, index) {
-                final task = data[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 0,
-                  ),
-                  child: ListTile(
-                    leading: Icon(
-                      task.isCompleted
-                          ? Icons.check_circle
-                          : Icons.radio_button_unchecked,
-                      color: task.isCompleted ? Colors.green : Colors.grey,
+      body: Consumer<DeliveryTaskProvider>(
+        builder: (context, provider, child) {
+          switch (provider.state) {
+            case TaskState.Loading:
+              return const Center(child: CircularProgressIndicator());
+            case TaskState.Error:
+              return Center(child: Text('Error: ${provider.errorMessage}'));
+            case TaskState.Loaded:
+              final data = provider.tasks;
+              if (data.isEmpty) {
+                return const Center(child: Text('Tidak ada data pengiriman.'));
+              }
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: data.length,
+                itemBuilder: (context, index) {
+                  final task = data[index];
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+                    child: ListTile(
+                      leading: Icon(
+                        task.isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
+                        color: task.isCompleted ? Colors.green : Colors.grey,
+                      ),
+                      title: Text(task.title),
+                      subtitle: Text('ID Tugas: ${task.id}'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => DeliveryDetailPage(task: task),
+                          ),
+                        );
+                      },
                     ),
-                    title: Text(task.title),
-                    subtitle: Text('ID Tugas: ${task.id}'),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DeliveryDetailPage(task: task),
-                        ),
-                      );
-                    },
-                  ),
-                );
-              },
-            );
+                  );
+                },
+              );
+            default:
+              return const Center(child: Text('Memulai...'));
           }
-          // data kosong
-          return const Center(child: Text('Tidak ada data pengiriman.'));
         },
       ),
       floatingActionButton: FloatingActionButton(
