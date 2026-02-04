@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:p1/auth_service.dart';
+import 'package:kirimtrack/auth_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
-import 'package:p1/providers/delivery_task_provider.dart';
+import 'package:kirimtrack/providers/delivery_task_provider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -292,7 +292,7 @@ class _ProfilePageState extends State<ProfilePage> {
               onTap: () {
                 showAboutDialog(
                   context: context,
-                  applicationName: 'LogiTrack',
+                  applicationName: 'KirimTrack',
                   applicationVersion: '1.0.0',
                   applicationIcon: Icon(Icons.local_shipping, size: 48, color: theme.colorScheme.primary),
                   children: [

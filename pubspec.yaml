@@ -1,4 +1,4 @@
-name: p1
+name: kirimtrack
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -30,21 +30,32 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^1.2.1 # Versi dapat bervariasi, gunakan versi terbaru
+  http: ^1.2.1
 
   # Firebase dependencies
   firebase_core: ^4.2.1
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.  cupertino_icons: ^1.0.8
   firebase_auth: ^6.1.2
+
+  # UI/UX packages
+  cupertino_icons: ^1.0.8
   image_picker: ^1.1.2
-  mobile_scanner: ^5.1.1 # Gunakan versi terbaru dari pub.dev
+  mobile_scanner: ^5.1.1
   geolocator: ^9.0.2
   provider: ^6.0.5
   shared_preferences: ^2.1.1
-  fl_chart: ^0.69.0 # Package untuk chart/grafik
-
+  fl_chart: ^0.69.0
+  
+  # Additional packages for improved UX
+  lottie: ^3.1.0  # For animations
+  cached_network_image: ^3.3.1  # For better image caching
+  shimmer: ^3.0.0  # For skeleton loading
+  pull_to_refresh: ^2.0.0  # For pull to refresh
+  connectivity_plus: ^6.0.3  # For network status
+  url_launcher: ^6.2.6  # For launching URLs
+  permission_handler: ^11.3.1  # For handling permissions
+  device_info_plus: ^10.1.0  # For device information
+  package_info_plus: ^8.0.0  # For app information
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

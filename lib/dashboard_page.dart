@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:p1/providers/delivery_task_provider.dart';
-import 'package:p1/profile_page.dart';
-import 'package:p1/delivery_detail_page.dart';
-import 'package:p1/qr_scanner_page.dart';
-import 'package:p1/history_page.dart';
+import 'package:kirimtrack/providers/delivery_task_provider.dart';
+import 'package:kirimtrack/profile_page.dart';
+import 'package:kirimtrack/delivery_detail_page.dart';
+import 'package:kirimtrack/qr_scanner_page.dart';
+import 'package:kirimtrack/history_page.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -71,7 +71,7 @@ class _DashboardPageState extends State<DashboardPage> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('LogiTrack - Dashboard'),
+        title: const Text('KirimTrack - Dashboard'),
         centerTitle: true,
         actions: [          IconButton(
             icon: const Icon(Icons.history),
@@ -127,7 +127,7 @@ class _DashboardPageState extends State<DashboardPage> {
               var filteredTasks = allTasks.where((task) {
                 final matchesSearch = _searchQuery.isEmpty ||
                     task.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-                    task.id.toString().contains(_searchQuery);
+                    task.id.contains(_searchQuery);
                 return matchesSearch;
               }).toList();
               
@@ -152,7 +152,12 @@ class _DashboardPageState extends State<DashboardPage> {
               }              return RefreshIndicator(
                 onRefresh: () => provider.fetchTasks(),
                 child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.only(
+                    left: 16, 
+                    right: 16, 
+                    top: 16, 
+                    bottom: 80 // Tambah padding bawah untuk FAB
+                  ),
                   itemCount: filteredTasks.length + 1,
                   itemBuilder: (context, index) {
                     if (index == 0) {
@@ -476,20 +481,25 @@ class _DashboardPageState extends State<DashboardPage> {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const QRScannerPage()),
-          );
-          if (result != null && mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Paket terdeteksi: $result')),
+      floatingActionButton: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        child: FloatingActionButton.extended(
+          onPressed: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const QRScannerPage()),
             );
-          }
-        },
-        icon: const Icon(Icons.qr_code_scanner),
-        label: const Text('Pindai QR'),      ),
+            if (result != null && mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Paket terdeteksi: $result')),
+              );
+            }
+          },
+          icon: const Icon(Icons.qr_code_scanner),
+          label: const Text('Pindai QR'),
+          elevation: 4,
+        ),
+      ),
     );
   }
   
