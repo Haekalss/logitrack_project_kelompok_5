@@ -6,6 +6,7 @@ import 'package:p1/profile_page.dart';
 import 'package:p1/delivery_detail_page.dart';
 import 'package:p1/qr_scanner_page.dart';
 import 'package:p1/history_page.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -72,7 +73,6 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('LogiTrack - Dashboard'),
@@ -283,8 +283,173 @@ class _DashboardPageState extends State<DashboardPage> {
                                 _buildFilterChip('Pending', Icons.pending_actions, theme),
                               ],
                             ),
+                          ),                          const SizedBox(height: 16),
+                          // Analytics Chart Section
+                          if (allTasks.isNotEmpty) ...[
+                            Text(
+                              'Analytics & Statistik',
+                              style: theme.textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            // Pie Chart
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Distribusi Status Pengiriman',
+                                    style: theme.textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),                                  const SizedBox(height: 16),
+                                  SizedBox(
+                                    height: 160,
+                                    child: PieChart(
+                                      PieChartData(
+                                        sections: [
+                                          PieChartSectionData(
+                                            value: completed.toDouble(),
+                                            title: '$completed',
+                                            color: Colors.green.shade600,
+                                            radius: 60,
+                                            titleStyle: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          PieChartSectionData(
+                                            value: pending.toDouble(),
+                                            title: '$pending',
+                                            color: Colors.orange.shade600,
+                                            radius: 60,
+                                            titleStyle: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ],
+                                        sectionsSpace: 2,
+                                        centerSpaceRadius: 35,
+                                        borderData: FlBorderData(show: false),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      _buildLegendItem('Selesai', Colors.green.shade600),
+                                      const SizedBox(width: 32),
+                                      _buildLegendItem('Pending', Colors.orange.shade600),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            // Completion Rate Card
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.blue.shade400,
+                                    Colors.blue.shade600,
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.blue.withOpacity(0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Tingkat Penyelesaian',
+                                          style: theme.textTheme.titleMedium
+                                              ?.copyWith(
+                                                color: Colors.white.withOpacity(
+                                                  0.9,
+                                                ),
+                                              ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          '${(completed / total * 100).toStringAsFixed(1)}%',
+                                          style: theme.textTheme.headlineLarge
+                                              ?.copyWith(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        LinearProgressIndicator(
+                                          value: completed / total,
+                                          backgroundColor: Colors.white
+                                              .withOpacity(0.3),
+                                          valueColor:
+                                              const AlwaysStoppedAnimation<
+                                                Color
+                                              >(Colors.white),
+                                          minHeight: 6,
+                                          borderRadius: BorderRadius.circular(
+                                            3,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Container(
+                                    padding: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: const Icon(
+                                      Icons.trending_up,
+                                      size: 36,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                          ],
+                          // Divider sebelum list
+                          Text(
+                            'Daftar Tugas Pengiriman',
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 12),
                           // Info hasil pencarian
                           if (_searchQuery.isNotEmpty || _selectedFilter != 'Semua')
                             Padding(
@@ -375,6 +540,27 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
       elevation: isSelected ? 4 : 1,
       shadowColor: theme.colorScheme.primary.withOpacity(0.3),
+    );
+  }
+
+  Widget _buildLegendItem(String label, Color color) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 16,
+          height: 16,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+        ),
+      ],
     );
   }
 }
