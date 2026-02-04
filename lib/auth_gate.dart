@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:p1/dashboard_page.dart';
-import 'package:p1/login_page.dart';
+import 'package:p1/landing_page.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -13,7 +13,7 @@ class AuthGate extends StatelessWidget {
       builder: (context, snapshot) {
         // Jika user belum login
         if (!snapshot.hasData) {
-          return const LoginPage();
+          return const LandingPage();
         }
 
         // Jika user sudah login

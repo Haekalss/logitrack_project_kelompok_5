@@ -4,6 +4,7 @@ import 'package:p1/auth_gate.dart';
 import 'package:p1/firebase_options.dart';
 import 'package:provider/provider.dart';
 import 'package:p1/providers/delivery_task_provider.dart';
+import 'package:p1/theme.dart';
 
 void main() async {
   // Pastikan Flutter binding terinisialisasi
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
       home: const AuthGate(),
     );
   }
