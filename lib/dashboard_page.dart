@@ -18,6 +18,17 @@ class _DashboardPageState extends State<DashboardPage> {
   // instance AuthService
   final AuthService _authService = AuthService();
   
+  // Search & Filter state
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  String _selectedFilter = 'Semua'; // Semua, Selesai, Pending
+  
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+  
   Widget _buildStatCard(String label, String value, IconData icon, ThemeData theme) {
     return Container(
       padding: const EdgeInsets.all(12),
@@ -131,10 +142,25 @@ class _DashboardPageState extends State<DashboardPage> {
                     ],
                   ),
                 ),
-              );
-            case TaskState.Loaded:
-              final data = provider.tasks;
-              if (data.isEmpty) {
+              );            case TaskState.Loaded:
+              final allTasks = provider.tasks;
+              
+              // Filter berdasarkan search query
+              var filteredTasks = allTasks.where((task) {
+                final matchesSearch = _searchQuery.isEmpty ||
+                    task.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+                    task.id.toString().contains(_searchQuery);
+                return matchesSearch;
+              }).toList();
+              
+              // Filter berdasarkan status
+              if (_selectedFilter == 'Selesai') {
+                filteredTasks = filteredTasks.where((t) => t.isCompleted).toList();
+              } else if (_selectedFilter == 'Pending') {
+                filteredTasks = filteredTasks.where((t) => !t.isCompleted).toList();
+              }
+              
+              if (allTasks.isEmpty) {
                 return Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -145,17 +171,15 @@ class _DashboardPageState extends State<DashboardPage> {
                     ],
                   ),
                 );
-              }
-
-              return RefreshIndicator(
+              }              return RefreshIndicator(
                 onRefresh: () => provider.fetchTasks(),
                 child: ListView.builder(
                   padding: const EdgeInsets.all(16),
-                  itemCount: data.length + 1,
+                  itemCount: filteredTasks.length + 1,
                   itemBuilder: (context, index) {
                     if (index == 0) {
-                      final total = data.length;
-                      final completed = data.where((t) => t.isCompleted).length;
+                      final total = allTasks.length;
+                      final completed = allTasks.where((t) => t.isCompleted).length;
                       final pending = total - completed;
 
                       return Column(
@@ -205,14 +229,78 @@ class _DashboardPageState extends State<DashboardPage> {
                               Expanded(child: _buildStatCard('Selesai', completed.toString(), Icons.check_circle, theme)),
                               const SizedBox(width: 12),
                               Expanded(child: _buildStatCard('Pending', pending.toString(), Icons.pending_actions, theme)),
-                            ],
+                            ],                          ),
+                          const SizedBox(height: 12),
+                          // Search Bar
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: TextField(
+                              controller: _searchController,
+                              onChanged: (value) {
+                                setState(() {
+                                  _searchQuery = value;
+                                });
+                              },
+                              decoration: InputDecoration(
+                                hintText: 'Cari berdasarkan ID atau Judul...',
+                                border: InputBorder.none,
+                                icon: Icon(Icons.search, color: theme.colorScheme.primary),
+                                suffixIcon: _searchQuery.isNotEmpty
+                                    ? IconButton(
+                                        icon: const Icon(Icons.clear),
+                                        onPressed: () {
+                                          setState(() {
+                                            _searchController.clear();
+                                            _searchQuery = '';
+                                          });
+                                        },
+                                      )
+                                    : null,
+                              ),
+                            ),
                           ),
                           const SizedBox(height: 12),
+                          // Filter Chips
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                _buildFilterChip('Semua', Icons.list, theme),
+                                const SizedBox(width: 8),
+                                _buildFilterChip('Selesai', Icons.check_circle, theme),
+                                const SizedBox(width: 8),
+                                _buildFilterChip('Pending', Icons.pending_actions, theme),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          // Info hasil pencarian
+                          if (_searchQuery.isNotEmpty || _selectedFilter != 'Semua')
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Text(
+                                'Menampilkan ${filteredTasks.length} dari ${allTasks.length} tugas',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurface.withOpacity(0.6),
+                                ),
+                              ),
+                            ),
                         ],
                       );
                     }
 
-                    final task = data[index - 1];
+                    final task = filteredTasks[index - 1];
                     return Card(
                       child: ListTile(
                         leading: CircleAvatar(
@@ -258,8 +346,35 @@ class _DashboardPageState extends State<DashboardPage> {
           }
         },
         icon: const Icon(Icons.qr_code_scanner),
-        label: const Text('Pindai QR'),
+        label: const Text('Pindai QR'),      ),
+    );
+  }
+  
+  Widget _buildFilterChip(String label, IconData icon, ThemeData theme) {
+    final isSelected = _selectedFilter == label;
+    return FilterChip(
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: isSelected ? Colors.white : theme.colorScheme.primary),
+          const SizedBox(width: 6),
+          Text(label),
+        ],
       ),
+      selected: isSelected,
+      onSelected: (selected) {
+        setState(() {
+          _selectedFilter = label;
+        });
+      },
+      backgroundColor: Colors.white,
+      selectedColor: theme.colorScheme.primary,
+      labelStyle: TextStyle(
+        color: isSelected ? Colors.white : theme.colorScheme.onSurface,
+        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+      ),
+      elevation: isSelected ? 4 : 1,
+      shadowColor: theme.colorScheme.primary.withOpacity(0.3),
     );
   }
 }
