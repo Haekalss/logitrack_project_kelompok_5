@@ -5,6 +5,7 @@ import 'package:p1/providers/delivery_task_provider.dart';
 import 'package:p1/profile_page.dart';
 import 'package:p1/delivery_detail_page.dart';
 import 'package:p1/qr_scanner_page.dart';
+import 'package:p1/history_page.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -66,6 +67,16 @@ class _DashboardPageState extends State<DashboardPage> {
         title: const Text('LogiTrack - Dashboard'),
         centerTitle: true,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            tooltip: 'Riwayat Pengiriman',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (c) => const HistoryPage()),
+              );
+            },
+          ),
           PopupMenuButton<String>(
             onSelected: (value) async {
               if (value == 'profile') {

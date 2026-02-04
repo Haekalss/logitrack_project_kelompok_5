@@ -15,6 +15,14 @@ class DeliveryTaskProvider extends ChangeNotifier {
   TaskState get state => _state;
   String get errorMessage => _errorMessage;
 
+  // Getter untuk filter tugas yang sudah selesai
+  List<DeliveryTask> get completedTasks =>
+      _tasks.where((task) => task.isCompleted).toList();
+
+  // Getter untuk filter tugas yang belum selesai
+  List<DeliveryTask> get pendingTasks =>
+      _tasks.where((task) => !task.isCompleted).toList();
+
   Future<void> fetchTasks() async {
     _state = TaskState.Loading;
     notifyListeners();
