@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:p1/providers/delivery_task_provider.dart';
+import 'package:kirimtrack/providers/delivery_task_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class AnalyticsPage extends StatefulWidget {

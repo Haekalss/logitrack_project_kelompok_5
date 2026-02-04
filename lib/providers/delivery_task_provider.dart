@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:p1/delivery_task_model.dart';
-import 'package:p1/api_service.dart';
+import 'package:kirimtrack/delivery_task_model.dart';
+import 'package:kirimtrack/api_service.dart';
 
 enum TaskState { Initial, Loading, Loaded, Error }
 
@@ -24,17 +24,39 @@ class DeliveryTaskProvider extends ChangeNotifier {
       _tasks.where((task) => !task.isCompleted).toList();
 
   Future<void> fetchTasks() async {
+    if (_state == TaskState.Loading) return; // Prevent multiple calls
+    
     _state = TaskState.Loading;
+    _errorMessage = '';
     notifyListeners();
 
     try {
       _tasks = await _apiService.fetchDeliveryTasks();
+      // Jika berhasil dapat data (termasuk mock), set ke Loaded
       _state = TaskState.Loaded;
+      _errorMessage = '';
+      print('✅ Tasks loaded successfully: ${_tasks.length} tasks');
     } catch (e) {
-      _errorMessage = e.toString();
+      print('❌ Error fetching tasks: $e');
       _state = TaskState.Error;
+      _errorMessage = 'Tidak dapat memuat data. Periksa koneksi internet Anda.';
     }
 
     notifyListeners();
+  }
+
+  // Method untuk refresh tanpa loading state
+  Future<void> refreshTasks() async {
+    try {
+      final newTasks = await _apiService.fetchDeliveryTasks();
+      if (newTasks.isNotEmpty) {
+        _tasks = newTasks;
+        _state = TaskState.Loaded;
+        _errorMessage = '';
+        notifyListeners();
+      }
+    } catch (e) {
+      // Silent refresh - tidak mengubah state jika gagal
+    }
   }
 }

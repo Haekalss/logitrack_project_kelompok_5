@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:p1/auth_service.dart';
-import 'package:p1/login_page.dart';
+import 'package:kirimtrack/auth_service.dart';
+import 'package:kirimtrack/login_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -86,7 +86,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Daftar untuk mulai menggunakan LogiTrack',
+                      'Daftar untuk mulai menggunakan KirimTrack',
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: Colors.white.withOpacity(0.9),
                       ),

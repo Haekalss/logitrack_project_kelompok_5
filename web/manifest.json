@@ -1,6 +1,6 @@
 {
-    "name": "p1",
-    "short_name": "p1",
+    "name": "KirimTrack",
+    "short_name": "KirimTrack",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

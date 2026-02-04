@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'Dashboard_page.dart';
-import 'package:p1/auth_service.dart';
-import 'package:p1/api_service.dart';
+import 'package:kirimtrack/efficient_dashboard.dart';
+import 'package:kirimtrack/auth_service.dart';
+import 'package:kirimtrack/api_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:p1/register_page.dart';
+import 'package:kirimtrack/register_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -77,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                     
                     // Title
                     Text(
-                      'LogiTrack',
+                      'KirimTrack',
                       style: theme.textTheme.headlineLarge?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -197,7 +197,7 @@ class _LoginPageState extends State<LoginPage> {
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const DashboardPage(),
+                                        builder: (context) => const EfficientDashboard(),
                                       ),
                                     );
                                   } else {

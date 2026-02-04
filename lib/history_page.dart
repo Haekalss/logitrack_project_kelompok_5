@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:p1/providers/delivery_task_provider.dart';
-import 'package:p1/delivery_detail_page.dart';
+import 'package:kirimtrack/providers/delivery_task_provider.dart';
+import 'package:kirimtrack/delivery_detail_page.dart';
 
 class HistoryPage extends StatefulWidget {
   const HistoryPage({super.key});
