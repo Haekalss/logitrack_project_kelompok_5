@@ -93,7 +93,7 @@ class _SettingsPageState extends State<SettingsPage> {
         title,
         style: theme.textTheme.titleMedium?.copyWith(
           fontWeight: FontWeight.w600,
-          color: AppTheme.primaryBlue,
+          color: AppTheme.primaryOrange,
         ),
       ),
     );
@@ -333,12 +333,12 @@ class _SettingsPageState extends State<SettingsPage> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: AppTheme.primaryBlue.withOpacity(0.1),
+              color: AppTheme.primaryOrange.withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
               leading,
-              color: AppTheme.primaryBlue,
+              color: AppTheme.primaryOrange,
               size: 20,
             ),
           ),

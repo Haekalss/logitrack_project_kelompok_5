@@ -21,11 +21,12 @@ class _HistoryPageState extends State<HistoryPage> {
   }
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Scaffold(
+    final theme = Theme.of(context);    return Scaffold(
       appBar: AppBar(
-        title: const Text('Riwayat Pengiriman'),
+        title: const Text(
+          'Riwayat Pengiriman',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
         flexibleSpace: Container(
           decoration: BoxDecoration(

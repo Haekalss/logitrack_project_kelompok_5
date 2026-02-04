@@ -53,8 +53,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 key: _formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    // Logo dengan Background Circle
+                  children: <Widget>[                    // Logo dengan Background Circle
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
@@ -68,10 +67,17 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                         ],
                       ),
-                      child: Icon(
-                        Icons.person_add,
-                        size: 64,
-                        color: theme.colorScheme.primary,
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        width: 64,
+                        height: 64,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Icon(
+                            Icons.person_add,
+                            size: 64,
+                            color: theme.colorScheme.primary,
+                          );
+                        },
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -86,7 +92,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Daftar untuk mulai menggunakan KirimTrack',
+                      'Daftar untuk mulai menggunakan LogiTrack',
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: Colors.white.withOpacity(0.9),
                       ),

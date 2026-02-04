@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:kirimtrack/providers/delivery_task_provider.dart';
-import 'package:kirimtrack/profile_page.dart';
 import 'package:kirimtrack/delivery_detail_page.dart';
-import 'package:kirimtrack/qr_scanner_page.dart';
-import 'package:kirimtrack/history_page.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -25,32 +22,37 @@ class _DashboardPageState extends State<DashboardPage> {
     _searchController.dispose();
     super.dispose();
   }
-  
-  Widget _buildStatCard(String label, String value, IconData icon, ThemeData theme) {
+  Widget _buildStatCard(
+    String label,
+    String value,
+    IconData icon,
+    ThemeData theme,
+  ) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
+          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
         ],
       ),
-      child: Row(
+      child: Column(
         children: [
-          CircleAvatar(
-            radius: 22,
-            backgroundColor: theme.colorScheme.primary.withOpacity(0.1),
-            child: Icon(icon, color: theme.colorScheme.primary),
+          Icon(icon, color: theme.colorScheme.primary, size: 24),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+            overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(value, style: theme.textTheme.titleLarge),
-              const SizedBox(height: 4),
-              Text(label, style: theme.textTheme.bodyMedium),
-            ],
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: theme.textTheme.bodySmall,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -65,35 +67,22 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   // initState above triggers provider fetch
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Scaffold(
+    final theme = Theme.of(context);    return Scaffold(
       appBar: AppBar(
-        title: const Text('KirimTrack - Dashboard'),
+        title: const Text(
+          'KirimTrack - Dashboard',
+          style: TextStyle(color: Colors.white),
+        ),
         centerTitle: true,
-        actions: [          IconButton(
-            icon: const Icon(Icons.history),
-            tooltip: 'Riwayat Pengiriman',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (c) => const HistoryPage()),
-              );
-            },
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [theme.colorScheme.primary, theme.colorScheme.secondary],
+            ),
           ),
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            tooltip: 'Profil',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (c) => const ProfilePage()),
-              );
-            },
-          ),
-        ],
+        ),
       ),
       body: Consumer<DeliveryTaskProvider>(
         builder: (context, provider, child) {
@@ -127,7 +116,7 @@ class _DashboardPageState extends State<DashboardPage> {
               var filteredTasks = allTasks.where((task) {
                 final matchesSearch = _searchQuery.isEmpty ||
                     task.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-                    task.id.contains(_searchQuery);
+                    task.id.toString().contains(_searchQuery);
                 return matchesSearch;
               }).toList();
               
@@ -152,12 +141,7 @@ class _DashboardPageState extends State<DashboardPage> {
               }              return RefreshIndicator(
                 onRefresh: () => provider.fetchTasks(),
                 child: ListView.builder(
-                  padding: const EdgeInsets.only(
-                    left: 16, 
-                    right: 16, 
-                    top: 16, 
-                    bottom: 80 // Tambah padding bawah untuk FAB
-                  ),
+                  padding: const EdgeInsets.all(16),
                   itemCount: filteredTasks.length + 1,
                   itemBuilder: (context, index) {
                     if (index == 0) {
@@ -185,38 +169,26 @@ class _DashboardPageState extends State<DashboardPage> {
                                     Text('Selamat datang di LogiTrack', style: theme.textTheme.bodyMedium?.copyWith(color: Colors.white70)),
                                   ],
                                 ),
-                                ElevatedButton.icon(
-                                  onPressed: () async {
-                                    final result = await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => const QRScannerPage()),
-                                    );
-                                    if (result != null && mounted) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('Paket terdeteksi: $result')),
-                                      );
-                                    }
-                                  },
-                                  icon: const Icon(Icons.qr_code_scanner),
-                                  label: const Text('Pindai QR'),
-                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: theme.colorScheme.primary),
-                                ),
                               ],
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 16),
                           Row(
                             children: [
                               Expanded(child: _buildStatCard('Total', total.toString(), Icons.format_list_bulleted, theme)),
-                              const SizedBox(width: 12),
+                              const SizedBox(width: 8),
                               Expanded(child: _buildStatCard('Selesai', completed.toString(), Icons.check_circle, theme)),
-                              const SizedBox(width: 12),
+                              const SizedBox(width: 8),
                               Expanded(child: _buildStatCard('Pending', pending.toString(), Icons.pending_actions, theme)),
-                            ],                          ),
-                          const SizedBox(height: 12),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
                           // Search Bar
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
@@ -266,7 +238,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 _buildFilterChip('Pending', Icons.pending_actions, theme),
                               ],
                             ),
-                          ),                          const SizedBox(height: 16),
+                          ),                          const SizedBox(height: 12),
                           // Analytics Chart Section
                           if (allTasks.isNotEmpty) ...[
                             Text(
@@ -298,7 +270,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                     style: theme.textTheme.titleMedium?.copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
-                                  ),                                  const SizedBox(height: 16),
+                                  ),                                  const SizedBox(height: 12),
                                   SizedBox(
                                     height: 160,
                                     child: PieChart(
@@ -345,7 +317,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 ],
                               ),
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 12),
                             // Completion Rate Card
                             Container(
                               padding: const EdgeInsets.all(16),
@@ -423,7 +395,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 ],
                               ),
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 12),
                           ],
                           // Divider sebelum list
                           Text(
@@ -480,25 +452,6 @@ class _DashboardPageState extends State<DashboardPage> {
               return const Center(child: Text('Memulai...'));
           }
         },
-      ),
-      floatingActionButton: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        child: FloatingActionButton.extended(
-          onPressed: () async {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const QRScannerPage()),
-            );
-            if (result != null && mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Paket terdeteksi: $result')),
-              );
-            }
-          },
-          icon: const Icon(Icons.qr_code_scanner),
-          label: const Text('Pindai QR'),
-          elevation: 4,
-        ),
       ),
     );
   }
