@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:p1/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:p1/providers/delivery_task_provider.dart';
 import 'package:p1/profile_page.dart';
@@ -16,9 +15,6 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  // instance AuthService
-  final AuthService _authService = AuthService();
-  
   // Search & Filter state
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
@@ -77,8 +73,7 @@ class _DashboardPageState extends State<DashboardPage> {
       appBar: AppBar(
         title: const Text('LogiTrack - Dashboard'),
         centerTitle: true,
-        actions: [
-          IconButton(
+        actions: [          IconButton(
             icon: const Icon(Icons.history),
             tooltip: 'Riwayat Pengiriman',
             onPressed: () {
@@ -88,32 +83,15 @@ class _DashboardPageState extends State<DashboardPage> {
               );
             },
           ),
-          PopupMenuButton<String>(
-            onSelected: (value) async {
-              if (value == 'profile') {
-                Navigator.push(context, MaterialPageRoute(builder: (c) => const ProfilePage()));
-              } else if (value == 'logout') {
-                final shouldLogout = await showDialog<bool>(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Konfirmasi Logout'),
-                    content: const Text('Apakah Anda yakin ingin keluar?'),
-                    actions: [
-                      TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Batal')),
-                      TextButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Ya, Logout')),
-                    ],
-                  ),
-                );
-                if (shouldLogout == true && mounted) {
-                  await _authService.signOut();
-                }
-              }
+          IconButton(
+            icon: const Icon(Icons.account_circle),
+            tooltip: 'Profil',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (c) => const ProfilePage()),
+              );
             },
-            itemBuilder: (context) => [
-              const PopupMenuItem(value: 'profile', child: Text('Profil')),
-              const PopupMenuItem(value: 'logout', child: Text('Logout')),
-            ],
-            icon: const Icon(Icons.more_vert),
           ),
         ],
       ),
