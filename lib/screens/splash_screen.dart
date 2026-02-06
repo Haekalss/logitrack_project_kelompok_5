@@ -142,8 +142,7 @@ class _SplashScreenState extends State<SplashScreen>
             Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Animated Logo
+                children: [                  // Animated Logo
                   ScaleTransition(
                     scale: _logoAnimation,
                     child: Container(
@@ -160,10 +159,19 @@ class _SplashScreenState extends State<SplashScreen>
                           ),
                         ],
                       ),
-                      child: Icon(
-                        Icons.local_shipping,
-                        size: 60,
-                        color: AppTheme.primaryBlue,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Image.asset(
+                          'assets/images/logo.png',
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(
+                              Icons.local_shipping,
+                              size: 60,
+                              color: AppTheme.primaryOrange,
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),

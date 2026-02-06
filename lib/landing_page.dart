@@ -104,8 +104,7 @@ class _LandingPageState extends State<LandingPage>
                   // Logo Section
                   Center(
                     child: Column(
-                      children: [
-                        // Animated Logo
+                      children: [                        // Animated Logo
                         ScaleTransition(
                           scale: _logoAnimation,
                           child: Container(
@@ -113,19 +112,28 @@ class _LandingPageState extends State<LandingPage>
                             height: 100,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              gradient: AppTheme.primaryGradient,
+                              color: Colors.white,
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppTheme.primaryBlue.withOpacity(0.3),
+                                  color: AppTheme.primaryOrange.withOpacity(0.3),
                                   blurRadius: 20,
                                   offset: const Offset(0, 10),
                                 ),
                               ],
                             ),
-                            child: const Icon(
-                              Icons.local_shipping,
-                              color: Colors.white,
-                              size: 50,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Image.asset(
+                                'assets/images/logo.png',
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(
+                                    Icons.local_shipping,
+                                    color: Color(0xFF1E40AF),
+                                    size: 50,
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         ),
@@ -146,7 +154,7 @@ class _LandingPageState extends State<LandingPage>
                                       'KirimTrack',
                                       style: theme.textTheme.displaySmall?.copyWith(
                                         fontWeight: FontWeight.bold,
-                                        color: AppTheme.primaryBlue,
+                                        color: AppTheme.primaryOrange,
                                       ),
                                     ),
                                     const SizedBox(height: 8),
@@ -355,12 +363,12 @@ class _LandingPageState extends State<LandingPage>
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppTheme.primaryBlue.withOpacity(0.1),
+              color: AppTheme.primaryOrange.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(
               icon,
-              color: AppTheme.primaryBlue,
+              color: AppTheme.primaryOrange,
               size: 20,
             ),
           ),

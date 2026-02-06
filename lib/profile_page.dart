@@ -284,8 +284,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 value: _isDarkMode,
                 onChanged: _toggleTheme,
               ),            ),
-            
-            _buildMenuCard(
+              _buildMenuCard(
               icon: Icons.info,
               title: 'Tentang Aplikasi',
               subtitle: 'Versi 1.0.0',
@@ -294,7 +293,21 @@ class _ProfilePageState extends State<ProfilePage> {
                   context: context,
                   applicationName: 'KirimTrack',
                   applicationVersion: '1.0.0',
-                  applicationIcon: Icon(Icons.local_shipping, size: 48, color: theme.colorScheme.primary),
+                  applicationIcon: SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: Image.asset(
+                      'assets/images/logo.png',
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(
+                          Icons.local_shipping,
+                          size: 48,
+                          color: theme.colorScheme.primary,
+                        );
+                      },
+                    ),
+                  ),
                   children: [
                     const Text('Aplikasi tracking pengiriman untuk memudahkan manajemen logistik.'),
                   ],
