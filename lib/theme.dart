@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class AppTheme {
-  // Modern gradient colors
-  static const Color primaryBlue = Color(0xFF2563EB);
-  static const Color secondaryBlue = Color(0xFF1E40AF);
-  static const Color accentOrange = Color(0xFFFF6B35);
+  // Dark Blue theme colors (Professional & Modern)
+  static const Color primaryOrange = Color(
+    0xFF1E40AF,
+  ); // Dark blue - professional medium-dark
+  static const Color secondaryOrange = Color(0xFF3B82F6); // Brighter blue
+  static const Color accentOrange = Color(0xFF60A5FA);
   static const Color successGreen = Color(0xFF10B981);
   static const Color warningYellow = Color(0xFFF59E0B);
   static const Color backgroundLight = Color(0xFFF8FAFC);
@@ -15,10 +17,8 @@ class AppTheme {
 
   static ThemeData get lightTheme {
     final colorScheme = ColorScheme.light(
-      primary: primaryBlue,
+      primary: primaryOrange,
       secondary: const Color(0xFF0369A1),
-      tertiary: successGreen,
-      surface: surfaceLight,
       background: backgroundLight,
       error: const Color(0xFFEF4444),
       onPrimary: Colors.white,
@@ -59,7 +59,7 @@ class AppTheme {
         tileColor: surfaceLight,
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: primaryBlue,
+        backgroundColor: primaryOrange,
         foregroundColor: Colors.white,
         elevation: 6,
         shape: const CircleBorder(),
@@ -86,13 +86,13 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: primaryBlue, width: 2),
+          borderSide: BorderSide(color: primaryOrange, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: surfaceLight,
-        selectedItemColor: primaryBlue,
+        selectedItemColor: primaryOrange,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
@@ -102,10 +102,8 @@ class AppTheme {
 
   static ThemeData get darkTheme {
     final colorScheme = ColorScheme.dark(
-      primary: primaryBlue,
+      primary: primaryOrange,
       secondary: const Color(0xFF0369A1),
-      tertiary: successGreen,
-      surface: surfaceDark,
       background: backgroundDark,
       error: const Color(0xFFEF4444),
       onPrimary: Colors.white,
@@ -146,7 +144,7 @@ class AppTheme {
         tileColor: surfaceDark,
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: primaryBlue,
+        backgroundColor: primaryOrange,
         foregroundColor: Colors.white,
         elevation: 6,
         shape: const CircleBorder(),
@@ -173,13 +171,13 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: primaryBlue, width: 2),
+          borderSide: BorderSide(color: primaryOrange, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: surfaceDark,
-        selectedItemColor: primaryBlue,
+        selectedItemColor: primaryOrange,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         elevation: 8,

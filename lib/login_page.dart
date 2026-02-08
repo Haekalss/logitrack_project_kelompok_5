@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kirimtrack/efficient_dashboard.dart';
+import 'package:kirimtrack/main_screen.dart';
 import 'package:kirimtrack/auth_service.dart';
 import 'package:kirimtrack/api_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -52,8 +52,7 @@ class _LoginPageState extends State<LoginPage> {
                 key: _formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    // Logo dengan Background Circle
+                  children: <Widget>[                    // Logo dengan Background Circle
                     Container(
                       width: 130,
                       height: 130,
@@ -69,6 +68,13 @@ class _LoginPageState extends State<LoginPage> {
                       child: Image.asset(
                         'assets/images/logo.png',
                         fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Icon(
+                            Icons.local_shipping,
+                            size: 64,
+                            color: theme.colorScheme.primary,
+                          );
+                        },
                       ),
                     ),
                     const SizedBox(height: 28),
@@ -193,13 +199,13 @@ class _LoginPageState extends State<LoginPage> {
                                   User? user = await _authService.signInWithEmailPassword(
                                     _emailController.text,
                                     _passwordController.text,
-                                  );
-
+                                      );
                                   if (user != null) {
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const EfficientDashboard(),
+                                        builder: (context) =>
+                                            const MainScreen(),
                                       ),
                                     );
                                   } else {

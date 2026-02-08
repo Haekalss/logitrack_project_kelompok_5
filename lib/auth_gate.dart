@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:kirimtrack/widgets/main_navigation.dart';
+import 'package:kirimtrack/main_screen.dart';
 import 'package:kirimtrack/landing_page.dart';
 
 class AuthGate extends StatelessWidget {
@@ -26,7 +26,7 @@ class AuthGate extends StatelessWidget {
         }
 
         // If user is logged in
-        return const MainNavigation();
+        return const MainScreen();
       },
     );
   }

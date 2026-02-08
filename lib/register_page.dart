@@ -53,8 +53,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 key: _formKey,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    // Logo dengan Background Circle
+                  children: <Widget>[                    // Logo dengan Background Circle
                     Container(
                       width: 130,
                       height: 130,
@@ -70,6 +69,13 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: Image.asset(
                         'assets/images/logo.png',
                         fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Icon(
+                            Icons.person_add,
+                            size: 64,
+                            color: theme.colorScheme.primary,
+                          );
+                        },
                       ),
                     ),
                     const SizedBox(height: 28),
