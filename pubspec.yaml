@@ -56,6 +56,10 @@ dependencies:
   device_info_plus: ^10.1.0  # For device information
   package_info_plus: ^8.0.0  # For app information
   
+  # Database for offline-first functionality
+  sqflite: ^2.3.0  # Local SQLite database
+  path: ^1.8.3  # Path manipulation for database
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -89,7 +89,7 @@ class _LandingPageState extends State<LandingPage>
         ),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: MediaQuery.of(context).size.height - 
@@ -99,7 +99,7 @@ class _LandingPageState extends State<LandingPage>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 30),
                   
                   // Logo Section
                   Center(
@@ -108,37 +108,24 @@ class _LandingPageState extends State<LandingPage>
                         ScaleTransition(
                           scale: _logoAnimation,
                           child: Container(
-                            width: 100,
-                            height: 100,
+                            width: 130,
+                            height: 130,
                             decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.white,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppTheme.primaryOrange.withOpacity(0.3),
-                                  blurRadius: 20,
-                                  offset: const Offset(0, 10),
-                                ),
-                              ],
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Image.asset(
-                                'assets/images/logo.png',
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Icon(
-                                    Icons.local_shipping,
-                                    color: Color(0xFF1E40AF),
-                                    size: 50,
-                                  );
-                                },
-                              ),
+                            child: Image.asset(
+                              'assets/images/logo.png',
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(
+                                  Icons.local_shipping,
+                                  color: Color(0xFF1E40AF),
+                                  size: 50,
+                                );
+                              },
                             ),
                           ),
                         ),
                         
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 28),
                         
                         // App Title
                         AnimatedBuilder(
@@ -155,14 +142,16 @@ class _LandingPageState extends State<LandingPage>
                                       style: theme.textTheme.displaySmall?.copyWith(
                                         fontWeight: FontWeight.bold,
                                         color: AppTheme.primaryOrange,
+                                        letterSpacing: 0.5,
                                       ),
                                     ),
-                                    const SizedBox(height: 8),
+                                    const SizedBox(height: 6),
                                     Text(
                                       'Smart Delivery Management',
-                                      style: theme.textTheme.titleMedium?.copyWith(
+                                      style: theme.textTheme.bodyLarge?.copyWith(
                                         color: Colors.grey[600],
                                         fontWeight: FontWeight.w500,
+                                        letterSpacing: 0.3,
                                       ),
                                     ),
                                   ],
@@ -175,7 +164,7 @@ class _LandingPageState extends State<LandingPage>
                     ),
                   ),
                   
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 48),
                   
                   // Feature Cards
                   AnimatedBuilder(
@@ -221,15 +210,15 @@ class _LandingPageState extends State<LandingPage>
                         child: Opacity(
                           opacity: _fadeAnimation.value,
                           child: Container(
-                            padding: const EdgeInsets.all(20),
+                            padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(20),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.05),
-                                  blurRadius: 15,
-                                  offset: const Offset(0, 8),
+                                  color: Colors.black.withValues(alpha: 0.06),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 10),
                                 ),
                               ],
                             ),
@@ -238,7 +227,8 @@ class _LandingPageState extends State<LandingPage>
                               textAlign: TextAlign.center,
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 color: Colors.grey[700],
-                                height: 1.4,
+                                height: 1.5,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ),
@@ -247,7 +237,7 @@ class _LandingPageState extends State<LandingPage>
                     },
                   ),
                   
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 48),
                   
                   // Action Buttons
                   AnimatedBuilder(
@@ -281,7 +271,7 @@ class _LandingPageState extends State<LandingPage>
                                 ),
                               ),
                               
-                              const SizedBox(height: 12),
+                              const SizedBox(height: 14),
                               
                               CustomButton(
                                 text: 'Buat Akun Baru',
@@ -311,7 +301,7 @@ class _LandingPageState extends State<LandingPage>
                     },
                   ),
                   
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 28),
                   
                   // Terms and conditions
                   AnimatedBuilder(
@@ -320,12 +310,13 @@ class _LandingPageState extends State<LandingPage>
                       return Transform.translate(
                         offset: Offset(0, _slideAnimation.value + 50),
                         child: Opacity(
-                          opacity: _fadeAnimation.value * 0.7,
+                          opacity: _fadeAnimation.value * 0.75,
                           child: Text(
                             'Dengan menggunakan aplikasi ini, Anda setuju dengan syarat dan ketentuan kami.',
                             textAlign: TextAlign.center,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: Colors.grey[500],
+                              fontSize: 12,
                             ),
                           ),
                         ),
@@ -333,7 +324,7 @@ class _LandingPageState extends State<LandingPage>
                     },
                   ),
                   
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 30),
                 ],
               ),
             ),
@@ -345,15 +336,15 @@ class _LandingPageState extends State<LandingPage>
 
   Widget _buildFeatureCard(IconData icon, String title, ThemeData theme) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
@@ -361,25 +352,26 @@ class _LandingPageState extends State<LandingPage>
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(11),
             decoration: BoxDecoration(
-              color: AppTheme.primaryOrange.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
+              color: AppTheme.primaryOrange.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
               icon,
               color: AppTheme.primaryOrange,
-              size: 20,
+              size: 22,
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
             title,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodySmall?.copyWith(
               fontWeight: FontWeight.w600,
               color: Colors.grey[700],
-              fontSize: 10,
+              fontSize: 11,
+              height: 1.3,
             ),
           ),
         ],
