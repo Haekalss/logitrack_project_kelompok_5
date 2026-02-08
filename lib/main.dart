@@ -4,7 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:kirimtrack/screens/splash_screen.dart';
 import 'package:kirimtrack/firebase_options.dart';
 import 'package:provider/provider.dart';
-import 'package:kirimtrack/providers/delivery_task_provider.dart';
+import 'package:kirimtrack/providers/offline_first_delivery_provider.dart';
+import 'package:kirimtrack/providers/offline_user_profile_provider.dart';
 import 'package:kirimtrack/providers/theme_provider.dart';
 import 'package:kirimtrack/services/notification_service.dart';
 import 'package:kirimtrack/theme.dart';
@@ -35,7 +36,8 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => DeliveryTaskProvider()),
+        ChangeNotifierProvider(create: (context) => OfflineFirstDeliveryProvider()),
+        ChangeNotifierProvider(create: (context) => OfflineUserProfileProvider()),
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => NotificationProvider()),
       ],
@@ -60,7 +62,7 @@ class MyApp extends StatelessWidget {
           home: const SplashScreen(),
           builder: (context, child) {
             return MediaQuery(
-              data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+              data: MediaQuery.of(context).copyWith(textScaler: const TextScaler.linear(1.0)),
               child: child!,
             );
           },

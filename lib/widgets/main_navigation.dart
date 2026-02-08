@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kirimtrack/efficient_dashboard.dart';
-import 'package:kirimtrack/analytics_page.dart';
-import 'package:kirimtrack/history_page.dart';
-import 'package:kirimtrack/profile_page.dart';
+import 'package:kirimtrack/offline_analytics_page.dart';
+import 'package:kirimtrack/offline_history_page.dart';
+import 'package:kirimtrack/offline_profile_page.dart';
 import 'package:kirimtrack/qr_scanner_page.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -31,9 +31,9 @@ class _MainNavigationState extends State<MainNavigation>
       label: 'Dashboard',
     ),
     NavItem(
-      icon: Icons.analytics_outlined,
-      activeIcon: Icons.analytics,
-      label: 'Analytics',
+      icon: Icons.history_outlined,
+      activeIcon: Icons.history,
+      label: 'Riwayat',
     ),
     NavItem(
       icon: Icons.qr_code_scanner_outlined,
@@ -41,14 +41,14 @@ class _MainNavigationState extends State<MainNavigation>
       label: 'Scanner',
     ),
     NavItem(
-      icon: Icons.history_outlined,
-      activeIcon: Icons.history,
-      label: 'History',
+      icon: Icons.analytics_outlined,
+      activeIcon: Icons.analytics,
+      label: 'Analitik',
     ),
     NavItem(
       icon: Icons.person_outline,
       activeIcon: Icons.person,
-      label: 'Profile',
+      label: 'Profil',
     ),
   ];
 
@@ -134,11 +134,11 @@ class _MainNavigationState extends State<MainNavigation>
       case 0:
         return const EfficientDashboard();
       case 1:
-        return const AnalyticsPage();
+        return const OfflineHistoryPage();
       case 2:
-        return const HistoryPage();
+        return const OfflineAnalyticsPage();
       case 3:
-        return const ProfilePage();
+        return const OfflineProfilePage();
       default:
         return const EfficientDashboard();
     }
@@ -165,66 +165,39 @@ class _MainNavigationState extends State<MainNavigation>
           );
         },
       ),
-      floatingActionButton: ScaleTransition(
-        scale: _fabAnimationController,
-        child: FloatingActionButton(
-          onPressed: _openScanner,
-          tooltip: 'Scan QR Code',
-          elevation: 8,
-          child: const Icon(Icons.qr_code_scanner, size: 28),
+
+      floatingActionButton: Container(
+        margin: const EdgeInsets.only(top: 28),
+        child: ScaleTransition(
+          scale: _fabAnimationController,
+          child: FloatingActionButton(
+            onPressed: _openScanner,
+            tooltip: 'Scan QR Code',
+            backgroundColor: Colors.white,
+            foregroundColor: const Color(0xFF2563EB),
+            elevation: 6,
+            shape: const CircleBorder(),
+            child: const Icon(Icons.qr_code_scanner, size: 28),
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        decoration: BoxDecoration(
-          color: theme.bottomNavigationBarTheme.backgroundColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 20,
-              offset: const Offset(0, -5),
-            ),
-          ],
-        ),
-        child: BottomAppBar(
-          height: 52,
-          color: Colors.transparent,
-          elevation: 0,
-          notchMargin: 6,
-          shape: const CircularNotchedRectangle(),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Left items (Dashboard, Analytics)
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildNavItem(0, theme),
-                      _buildNavItem(1, theme),
-                    ],
-                  ),
-                ),
-                
-                // Space for FAB
-                const SizedBox(width: 70),
-                
-                // Right items (History, Profile)
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      _buildNavItem(3, theme), // History (index 3 becomes 2)
-                      _buildNavItem(4, theme), // Profile (index 4 becomes 3)
-                    ],
-                  ),
-                ),
-              ],
-            ),
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 8,
+        color: const Color(0xFF1E3A8A),
+        elevation: 12,
+        padding: EdgeInsets.zero,
+        child: SizedBox(
+          height: 60,
+          child: Row(
+            children: [
+              Expanded(child: _buildNavItem(0, theme)),
+              Expanded(child: _buildNavItem(1, theme)),
+              const SizedBox(width: 56), // Space for FAB
+              Expanded(child: _buildNavItem(3, theme)),
+              Expanded(child: _buildNavItem(4, theme)),
+            ],
           ),
         ),
       ),
@@ -236,41 +209,28 @@ class _MainNavigationState extends State<MainNavigation>
     final isActive = _currentIndex == adjustedIndex;
     final navItem = _navItems[index];
     
-    return GestureDetector(
+    return InkWell(
       onTap: () => _onNavItemTapped(index),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-        decoration: BoxDecoration(
-          color: isActive 
-            ? theme.colorScheme.primary.withOpacity(0.1)
-            : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              isActive ? navItem.activeIcon : navItem.icon,
-              color: isActive 
-                ? theme.colorScheme.primary
-                : theme.colorScheme.onSurface.withOpacity(0.6),
-              size: 16,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            isActive ? navItem.activeIcon : navItem.icon,
+            color: isActive ? Colors.white : Colors.white.withOpacity(0.55),
+            size: 24,
+          ),
+          const SizedBox(height: 3),
+          Text(
+            navItem.label,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
+              color: isActive ? Colors.white : Colors.white.withOpacity(0.55),
             ),
-            Text(
-              navItem.label,
-              style: TextStyle(
-                fontSize: 8,
-                color: isActive 
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.onSurface.withOpacity(0.6),
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }

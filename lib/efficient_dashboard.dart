@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:kirimtrack/providers/delivery_task_provider.dart';
-import 'package:kirimtrack/profile_page.dart';
+import 'package:kirimtrack/providers/offline_first_delivery_provider.dart';
+import 'package:kirimtrack/providers/offline_user_profile_provider.dart';
+import 'package:kirimtrack/widgets/connectivity_indicator.dart';
 import 'package:kirimtrack/delivery_detail_page.dart';
-import 'package:kirimtrack/qr_scanner_page.dart';
-import 'package:kirimtrack/history_page.dart';
 import 'package:kirimtrack/delivery_task_model.dart';
+import 'package:kirimtrack/theme.dart';
 
 class EfficientDashboard extends StatefulWidget {
   const EfficientDashboard({super.key});
@@ -29,63 +30,75 @@ class _EfficientDashboardState extends State<EfficientDashboard> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<DeliveryTaskProvider>(context, listen: false).fetchTasks();
+      // Initialize offline-first providers
+      Provider.of<OfflineFirstDeliveryProvider>(context, listen: false).fetchTasks();
+      Provider.of<OfflineUserProfileProvider>(context, listen: false).initialize();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('KirimTrack - Dashboard'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.history),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (c) => const HistoryPage()),
+        automaticallyImplyLeading: false,
+        elevation: 0,
+        toolbarHeight: 60,
+        flexibleSpace: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.only(top: 12, left: 16, right: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 40,
+                  child: Image.asset(
+                    'assets/images/kirimtrack_logo.png',
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                const ConnectivityIndicator(),
+              ],
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (c) => const ProfilePage()),
-            ),
-          ),
-        ],
+        ),
       ),
-      body: Consumer<DeliveryTaskProvider>(
-        builder: (context, provider, child) {
-          return _buildContent(context, provider, theme);
+      body: Consumer2<OfflineFirstDeliveryProvider, OfflineUserProfileProvider>(
+        builder: (context, deliveryProvider, profileProvider, child) {
+          return _buildContent(context, deliveryProvider, theme);
         },
       ),
-      floatingActionButton: _buildFAB(context, theme),
     );
   }
 
-  Widget _buildContent(BuildContext context, DeliveryTaskProvider provider, ThemeData theme) {
-    switch (provider.state) {
-      case TaskState.Loading:
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      
-      case TaskState.Error:
-        return _buildErrorView(provider, theme);
-      
-      case TaskState.Loaded:
-        return _buildTaskList(provider, theme);
-      
-      default:
-        return const Center(child: Text('Memulai...'));
+  Widget _buildContent(BuildContext context, OfflineFirstDeliveryProvider provider, ThemeData theme) {
+    if (provider.isLoading && provider.tasks.isEmpty) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Memuat data pengiriman...'),
+          ],
+        ),
+      );
     }
+
+    if (provider.error != null && provider.tasks.isEmpty) {
+      return _buildErrorView(provider, theme);
+    }
+    
+    if (provider.tasks.isEmpty) {
+      return _buildEmptyView(theme);
+    }
+
+    return _buildTaskList(provider, theme);
   }
 
-  Widget _buildErrorView(DeliveryTaskProvider provider, ThemeData theme) {
+  Widget _buildErrorView(OfflineFirstDeliveryProvider provider, ThemeData theme) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -101,7 +114,7 @@ class _EfficientDashboardState extends State<EfficientDashboard> {
                    fontWeight: FontWeight.bold,
                  )),
             const SizedBox(height: 8),
-            Text(provider.errorMessage,
+            Text(provider.error ?? 'Terjadi kesalahan tidak diketahui',
                  textAlign: TextAlign.center,
                  style: theme.textTheme.bodyMedium),
             const SizedBox(height: 24),
@@ -116,7 +129,7 @@ class _EfficientDashboardState extends State<EfficientDashboard> {
     );
   }
 
-  Widget _buildTaskList(DeliveryTaskProvider provider, ThemeData theme) {
+  Widget _buildTaskList(OfflineFirstDeliveryProvider provider, ThemeData theme) {
     final allTasks = provider.tasks;
     
     if (allTasks.isEmpty) {
@@ -127,13 +140,9 @@ class _EfficientDashboardState extends State<EfficientDashboard> {
     final filteredTasks = _getFilteredTasks(allTasks);
     
     return RefreshIndicator(
-      onRefresh: () => provider.refreshTasks(),
+      onRefresh: () => provider.fetchTasks(),
       child: CustomScrollView(
         slivers: [
-          // Header Stats
-          SliverToBoxAdapter(
-            child: _buildStatsHeader(allTasks, theme),
-          ),
           // Search Bar
           SliverToBoxAdapter(
             child: _buildSearchBar(theme),
@@ -176,94 +185,31 @@ class _EfficientDashboardState extends State<EfficientDashboard> {
     }
   }
 
-  Widget _buildStatsHeader(List<DeliveryTask> allTasks, ThemeData theme) {
-    final total = allTasks.length;
-    final completed = allTasks.where((t) => t.isCompleted).length;
-    final pending = total - completed;
 
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            theme.colorScheme.primary,
-            theme.colorScheme.secondary,
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Selamat datang!',
-               style: theme.textTheme.titleLarge?.copyWith(
-                 color: Colors.white,
-                 fontWeight: FontWeight.bold,
-               )),
-          const SizedBox(height: 8),
-          Text('Kelola pengiriman Anda dengan mudah',
-               style: theme.textTheme.bodyMedium?.copyWith(
-                 color: Colors.white.withOpacity(0.9),
-               )),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildStatItem('Total', total.toString(), Colors.white),
-              _buildStatItem('Selesai', completed.toString(), Colors.green[200]!),
-              _buildStatItem('Pending', pending.toString(), Colors.orange[200]!),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatItem(String label, String value, Color color) {
-    return Column(
-      children: [
-        Text(value,
-             style: TextStyle(
-               fontSize: 20,
-               fontWeight: FontWeight.bold,
-               color: color,
-             )),
-        const SizedBox(height: 4),
-        Text(label,
-             style: TextStyle(
-               fontSize: 12,
-               color: color.withOpacity(0.8),
-             )),
-      ],
-    );
-  }
 
   Widget _buildSearchBar(ThemeData theme) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: AppTheme.primaryBlue.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.primaryBlue.withOpacity(0.15)),
       ),
       child: TextField(
         controller: _searchController,
         onChanged: (value) => setState(() => _searchQuery = value),
         decoration: InputDecoration(
           hintText: 'Cari berdasarkan ID atau Judul...',
+          hintStyle: TextStyle(color: Colors.grey[500], fontSize: 14),
           border: InputBorder.none,
-          icon: Icon(Icons.search, color: theme.colorScheme.primary),
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          filled: false,
+          icon: Icon(Icons.search, color: AppTheme.primaryBlue),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.clear),
+                  icon: Icon(Icons.clear, color: Colors.grey[500]),
                   onPressed: () {
                     setState(() {
                       _searchController.clear();
@@ -279,10 +225,9 @@ class _EfficientDashboardState extends State<EfficientDashboard> {
 
   Widget _buildFilterChips(ThemeData theme) {
     return Container(
-      height: 60,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: ListView(
-        scrollDirection: Axis.horizontal,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _buildFilterChip('Semua', Icons.all_inclusive, theme),
           const SizedBox(width: 8),
@@ -302,13 +247,21 @@ class _EfficientDashboardState extends State<EfficientDashboard> {
       label: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16),
+          Icon(icon, size: 16, color: isSelected ? Colors.white : AppTheme.primaryBlue),
           const SizedBox(width: 4),
-          Text(label),
+          Text(label, style: TextStyle(
+            color: isSelected ? Colors.white : AppTheme.primaryBlue,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+          )),
         ],
       ),
-      backgroundColor: Colors.grey[100],
-      selectedColor: theme.colorScheme.primary.withOpacity(0.2),
+      backgroundColor: AppTheme.primaryBlue.withOpacity(0.08),
+      selectedColor: AppTheme.primaryBlue,
+      checkmarkColor: Colors.white,
+      side: BorderSide(
+        color: isSelected ? AppTheme.primaryBlue : AppTheme.primaryBlue.withOpacity(0.2),
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     );
   }
 
@@ -320,8 +273,8 @@ class _EfficientDashboardState extends State<EfficientDashboard> {
         child: ListTile(
           leading: CircleAvatar(
             backgroundColor: task.isCompleted 
-                ? Colors.green.withOpacity(0.1)
-                : theme.colorScheme.primary.withOpacity(0.1),
+                ? Colors.green.withValues(alpha: 0.1)
+                : theme.colorScheme.primary.withValues(alpha: 0.1),
             child: Icon(
               task.isCompleted ? Icons.check : Icons.local_shipping,
               color: task.isCompleted ? Colors.green : theme.colorScheme.primary,
@@ -343,14 +296,36 @@ class _EfficientDashboardState extends State<EfficientDashboard> {
                      )),
             ],
           ),
-          trailing: Icon(
-            Icons.chevron_right,
-            color: theme.colorScheme.primary,
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (!task.isCompleted)
+                IconButton(
+                  icon: const Icon(Icons.check_circle, color: Colors.green),
+                  onPressed: () async {
+                    HapticFeedback.lightImpact();
+                    final provider = Provider.of<OfflineFirstDeliveryProvider>(context, listen: false);
+                    await provider.toggleTaskComplete(task.id);
+                    
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('✅ Pengiriman ${task.id} berhasil diselesaikan!'),
+                          backgroundColor: Colors.green,
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    }
+                  },
+                  tooltip: 'Selesaikan Pengiriman',
+                ),
+              const Icon(Icons.chevron_right, color: Colors.grey),
+            ],
           ),
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DeliveryDetailPage(task: task),
+              builder: (context) => DeliveryDetailPage(taskId: task.id),
             ),
           ),
         ),
@@ -365,39 +340,17 @@ class _EfficientDashboardState extends State<EfficientDashboard> {
         children: [
           Icon(Icons.inbox_outlined, 
                size: 64, 
-               color: theme.colorScheme.onSurface.withOpacity(0.4)),
+               color: theme.colorScheme.onSurface.withValues(alpha: 0.4)),
           const SizedBox(height: 16),
           Text('Belum ada data pengiriman', 
                style: theme.textTheme.titleMedium),
           const SizedBox(height: 24),
           ElevatedButton.icon(
-            onPressed: () => Provider.of<DeliveryTaskProvider>(context, listen: false).fetchTasks(),
+            onPressed: () => Provider.of<OfflineFirstDeliveryProvider>(context, listen: false).fetchTasks(),
             icon: const Icon(Icons.refresh),
             label: const Text('Muat Ulang'),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildFAB(BuildContext context, ThemeData theme) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      child: FloatingActionButton.extended(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const QRScannerPage()),
-          );
-          if (result != null && mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Paket terdeteksi: $result')),
-            );
-          }
-        },
-        icon: const Icon(Icons.qr_code_scanner),
-        label: const Text('Pindai QR'),
-        elevation: 4,
       ),
     );
   }

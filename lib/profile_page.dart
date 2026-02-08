@@ -4,7 +4,7 @@ import 'package:kirimtrack/auth_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
-import 'package:kirimtrack/providers/delivery_task_provider.dart';
+import 'package:kirimtrack/providers/offline_first_delivery_provider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -221,11 +221,11 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 24),
             
             // Statistics Section
-            Consumer<DeliveryTaskProvider>(
+            Consumer<OfflineFirstDeliveryProvider>(
               builder: (context, provider, child) {
                 final total = provider.tasks.length;
-                final completed = provider.completedTasks.length;
-                final pending = provider.pendingTasks.length;
+                final completed = provider.completedTasksCount;
+                final pending = provider.pendingTasksCount;
                 final rate = total > 0 ? (completed / total * 100).toStringAsFixed(0) : '0';
                 
                 return Container(

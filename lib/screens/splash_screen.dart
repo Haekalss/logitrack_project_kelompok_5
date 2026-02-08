@@ -160,10 +160,11 @@ class _SplashScreenState extends State<SplashScreen>
                           ),
                         ],
                       ),
-                      child: Icon(
-                        Icons.local_shipping,
-                        size: 60,
-                        color: AppTheme.primaryBlue,
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        width: 90,
+                        height: 90,
+                        fit: BoxFit.contain,
                       ),
                     ),
                   ),

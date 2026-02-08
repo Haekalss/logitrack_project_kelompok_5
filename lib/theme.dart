@@ -16,7 +16,7 @@ class AppTheme {
   static ThemeData get lightTheme {
     final colorScheme = ColorScheme.light(
       primary: primaryBlue,
-      secondary: accentOrange,
+      secondary: const Color(0xFF0369A1),
       tertiary: successGreen,
       surface: surfaceLight,
       background: backgroundLight,
@@ -103,7 +103,7 @@ class AppTheme {
   static ThemeData get darkTheme {
     final colorScheme = ColorScheme.dark(
       primary: primaryBlue,
-      secondary: accentOrange,
+      secondary: const Color(0xFF0369A1),
       tertiary: successGreen,
       surface: surfaceDark,
       background: backgroundDark,
@@ -268,13 +268,14 @@ class AppTheme {
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [primaryBlue, secondaryBlue],
+    colors: [Color(0xFF2563EB), Color(0xFF1E40AF)],
+    stops: [0.0, 1.0],
   );
 
   static const LinearGradient accentGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [accentOrange, Color(0xFFFF8F65)],
+    colors: [Color(0xFF2563EB), Color(0xFF0369A1)],
   );
 
   static const LinearGradient successGradient = LinearGradient(
