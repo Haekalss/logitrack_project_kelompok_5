@@ -434,7 +434,7 @@ class _DeliveryDetailPageState extends State<DeliveryDetailPage> {
                                               Icon(Icons.broken_image_rounded, size: 44, color: subtitleColor),
                                               const SizedBox(height: 8),
                                               Text('Foto tersimpan', style: TextStyle(color: subtitleColor, fontSize: 13)),
-                                              Text(displayImagePath!.split('/').last, style: TextStyle(color: subtitleColor.withValues(alpha: 0.7), fontSize: 11)),
+                                              Text(displayImagePath.split('/').last, style: TextStyle(color: subtitleColor.withValues(alpha: 0.7), fontSize: 11)),
                                             ],
                                           ),
                                         );

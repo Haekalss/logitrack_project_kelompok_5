@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:kirimtrack/dashboard_page.dart';
-import 'package:kirimtrack/history_page.dart';
+import 'package:kirimtrack/efficient_dashboard.dart';
+import 'package:kirimtrack/offline_history_page.dart';
 import 'package:kirimtrack/profile_page.dart';
 import 'package:kirimtrack/qr_scanner_page.dart';
 import 'package:provider/provider.dart';
-import 'package:kirimtrack/providers/delivery_task_provider.dart';
+import 'package:kirimtrack/providers/offline_first_delivery_provider.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -18,10 +18,10 @@ class _MainScreenState extends State<MainScreen> {
 
   // List of pages
   final List<Widget> _pages = [
-    const DashboardPage(),
+    const EfficientDashboard(),
     const TasksPage(),
     const SizedBox.shrink(), // QR Scanner akan dibuka sebagai modal
-    const HistoryPage(),
+    const OfflineHistoryPage(),
     const ProfilePage(),
   ];
 
@@ -67,11 +67,9 @@ class _MainScreenState extends State<MainScreen> {
           shape: const CircularNotchedRectangle(),
           notchMargin: 8,
           elevation: 0,
-          child: SizedBox(
-            height: 65,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
                 // Beranda
                 _buildNavItem(
                   icon: Icons.home_outlined,
@@ -114,7 +112,8 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ),
         ),
-      ),      floatingActionButton: Container(
+      ),
+      floatingActionButton: Container(
         height: 65,
         width: 65,
         decoration: BoxDecoration(
@@ -210,202 +209,196 @@ class TasksPage extends StatelessWidget {
           ),
         ),
       ),
-      body: Consumer<DeliveryTaskProvider>(
+      body: Consumer<OfflineFirstDeliveryProvider>(
         builder: (context, provider, child) {
-          switch (provider.state) {
-            case TaskState.Loading:
-              return const Center(child: CircularProgressIndicator());
-            
-            case TaskState.Error:
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.error_outline,
-                        size: 64,
-                        color: theme.colorScheme.error,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Terjadi Kesalahan',
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        provider.errorMessage,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton.icon(
-                        onPressed: () => provider.fetchTasks(),
-                        icon: const Icon(Icons.refresh),
-                        label: const Text('Coba Lagi'),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            
-            case TaskState.Loaded:
-              final allTasks = provider.tasks;
-              
-              if (allTasks.isEmpty) {
-                return Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        theme.colorScheme.primary.withOpacity(0.05),
-                        Colors.white,
-                      ],
+          if (provider.isLoading && provider.tasks.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (provider.error != null && provider.tasks.isEmpty) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: theme.colorScheme.error,
                     ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Terjadi Kesalahan',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      provider.error ?? 'Unknown error',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      onPressed: () => provider.fetchTasks(),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Coba Lagi'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          final allTasks = provider.tasks;
+              
+          if (allTasks.isEmpty) {
+            return Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    theme.colorScheme.primary.withOpacity(0.05),
+                    Colors.white,
+                  ],
+                ),
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(32),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.assignment_outlined,
+                        size: 64,
+                        color: theme.colorScheme.primary.withOpacity(0.5),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Belum Ada Tugas',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 48),
+                      child: Text(
+                        'Semua tugas pengiriman akan\nditampilkan di sini',
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: () => provider.fetchTasks(),
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: allTasks.length,
+              itemBuilder: (context, index) {
+                final task = allTasks[index];
+                final isCompleted = task.isCompleted;
+                    
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(32),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
-                                blurRadius: 20,
-                                offset: const Offset(0, 10),
-                              ),
-                            ],
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(12),
+                    leading: CircleAvatar(
+                      radius: 28,
+                      backgroundColor: isCompleted 
+                          ? Colors.green.shade50 
+                          : Colors.orange.shade50,
+                      child: Icon(
+                        isCompleted ? Icons.check_circle : Icons.pending,
+                        color: isCompleted 
+                            ? Colors.green.shade600 
+                            : Colors.orange.shade600,
+                        size: 32,
+                      ),
+                    ),
+                    title: Text(
+                      task.title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.tag,
+                            size: 16,
+                            color: theme.colorScheme.onSurface.withOpacity(0.6),
                           ),
-                          child: Icon(
-                            Icons.assignment_outlined,
-                            size: 64,
-                            color: theme.colorScheme.primary.withOpacity(0.5),
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        Text(
-                          'Belum Ada Tugas',
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.primary,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 48),
-                          child: Text(
-                            'Semua tugas pengiriman akan\nditampilkan di sini',
-                            textAlign: TextAlign.center,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: Colors.grey.shade600,
+                          const SizedBox(width: 4),
+                          Text(
+                            'ID: ${task.id}',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurface.withOpacity(0.6),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }
-
-              return RefreshIndicator(
-                onRefresh: () => provider.fetchTasks(),
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: allTasks.length,
-                  itemBuilder: (context, index) {
-                    final task = allTasks[index];
-                    final isCompleted = task.isCompleted;
-                    
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      elevation: 2,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.all(12),
-                        leading: CircleAvatar(
-                          radius: 28,
-                          backgroundColor: isCompleted 
-                              ? Colors.green.shade50 
-                              : Colors.orange.shade50,
-                          child: Icon(
-                            isCompleted ? Icons.check_circle : Icons.pending,
+                          const SizedBox(width: 16),
+                          Icon(
+                            isCompleted ? Icons.done_all : Icons.schedule,
+                            size: 16,
                             color: isCompleted 
                                 ? Colors.green.shade600 
                                 : Colors.orange.shade600,
-                            size: 32,
                           ),
-                        ),
-                        title: Text(
-                          task.title,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
+                          const SizedBox(width: 4),
+                          Text(
+                            isCompleted ? 'Selesai' : 'Pending',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: isCompleted 
+                                  ? Colors.green.shade600 
+                                  : Colors.orange.shade600,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                        subtitle: Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.tag,
-                                size: 16,
-                                color: theme.colorScheme.onSurface.withOpacity(0.6),
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                'ID: ${task.id}',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurface.withOpacity(0.6),
-                                ),
-                              ),
-                              const SizedBox(width: 16),
-                              Icon(
-                                isCompleted ? Icons.done_all : Icons.schedule,
-                                size: 16,
-                                color: isCompleted 
-                                    ? Colors.green.shade600 
-                                    : Colors.orange.shade600,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                isCompleted ? 'Selesai' : 'Pending',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: isCompleted 
-                                      ? Colors.green.shade600 
-                                      : Colors.orange.shade600,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        trailing: Icon(
-                          Icons.arrow_forward_ios,
-                          color: theme.colorScheme.primary,
-                        ),
-                        onTap: () {
-                          // Navigate to detail page
-                        },
+                        ],
                       ),
-                    );
-                  },
-                ),
-              );
-            
-            default:
-              return const Center(
-                child: Text('Memuat data...'),
-              );
-          }
+                    ),
+                    trailing: Icon(
+                      Icons.arrow_forward_ios,
+                      color: theme.colorScheme.primary,
+                    ),
+                    onTap: () {
+                      // Navigate to detail page
+                    },
+                  ),
+                );
+              },
+            ),
+          );
         },
       ),
     );

@@ -110,7 +110,7 @@ class _LandingPageState extends State<LandingPage>
                           child: Container(
                             width: 130,
                             height: 130,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(),
                             child: Image.asset(
                               'assets/images/logo.png',
                               fit: BoxFit.contain,
