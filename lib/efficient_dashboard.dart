@@ -192,9 +192,9 @@ class _EfficientDashboardState extends State<EfficientDashboard> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
-        color: AppTheme.primaryBlue.withOpacity(0.08),
+        color: AppTheme.primaryOrange.withOpacity(0.08),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.primaryBlue.withOpacity(0.15)),
+        border: Border.all(color: AppTheme.primaryOrange.withOpacity(0.15)),
       ),
       child: TextField(
         controller: _searchController,
@@ -206,7 +206,7 @@ class _EfficientDashboardState extends State<EfficientDashboard> {
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
           filled: false,
-          icon: Icon(Icons.search, color: AppTheme.primaryBlue),
+          icon: Icon(Icons.search, color: AppTheme.primaryOrange),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
                   icon: Icon(Icons.clear, color: Colors.grey[500]),
@@ -247,19 +247,19 @@ class _EfficientDashboardState extends State<EfficientDashboard> {
       label: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: isSelected ? Colors.white : AppTheme.primaryBlue),
+          Icon(icon, size: 16, color: isSelected ? Colors.white : AppTheme.primaryOrange),
           const SizedBox(width: 4),
           Text(label, style: TextStyle(
-            color: isSelected ? Colors.white : AppTheme.primaryBlue,
+            color: isSelected ? Colors.white : AppTheme.primaryOrange,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
           )),
         ],
       ),
-      backgroundColor: AppTheme.primaryBlue.withOpacity(0.08),
-      selectedColor: AppTheme.primaryBlue,
+      backgroundColor: AppTheme.primaryOrange.withOpacity(0.08),
+      selectedColor: AppTheme.primaryOrange,
       checkmarkColor: Colors.white,
       side: BorderSide(
-        color: isSelected ? AppTheme.primaryBlue : AppTheme.primaryBlue.withOpacity(0.2),
+        color: isSelected ? AppTheme.primaryOrange : AppTheme.primaryOrange.withOpacity(0.2),
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
     );

@@ -103,24 +103,37 @@ class _LandingPageState extends State<LandingPage>
                   
                   // Logo Section
                   Center(
-                    child: Column(
-                      children: [                        // Animated Logo
+                    child: Column(                      children: [
+                        // Animated Logo
                         ScaleTransition(
                           scale: _logoAnimation,
                           child: Container(
                             width: 130,
                             height: 130,
                             decoration: BoxDecoration(
-                            child: Image.asset(
-                              'assets/images/logo.png',
-                              fit: BoxFit.contain,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Icon(
-                                  Icons.local_shipping,
-                                  color: Color(0xFF1E40AF),
-                                  size: 50,
-                                );
-                              },
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppTheme.primaryOrange.withOpacity(0.3),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 10),
+                                ),
+                              ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: Image.asset(
+                                'assets/images/logo.png',
+                                fit: BoxFit.contain,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(
+                                    Icons.local_shipping,
+                                    color: Color(0xFF1E40AF),
+                                    size: 50,
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         ),
