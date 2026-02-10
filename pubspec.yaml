@@ -30,35 +30,25 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^1.2.1
+  http: ^1.2.1 # Versi dapat bervariasi, gunakan versi terbaru
 
   # Firebase dependencies
   firebase_core: ^4.2.1
-  firebase_auth: ^6.1.2
 
-  # UI/UX packages
-  cupertino_icons: ^1.0.8
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.  cupertino_icons: ^1.0.8
+  firebase_auth: ^6.1.2
   image_picker: ^1.1.2
-  mobile_scanner: ^5.1.1
+  mobile_scanner: ^5.1.1 # Gunakan versi terbaru dari pub.dev
   geolocator: ^9.0.2
   provider: ^6.0.5
   shared_preferences: ^2.1.1
-  fl_chart: ^0.69.0
-  
-  # Additional packages for improved UX
-  lottie: ^3.1.0  # For animations
-  cached_network_image: ^3.3.1  # For better image caching
-  shimmer: ^3.0.0  # For skeleton loading
-  pull_to_refresh: ^2.0.0  # For pull to refresh
-  connectivity_plus: ^6.0.3  # For network status
-  url_launcher: ^6.2.6  # For launching URLs
-  permission_handler: ^11.3.1  # For handling permissions
-  device_info_plus: ^10.1.0  # For device information
-  package_info_plus: ^8.0.0  # For app information
-  
-  # Database for offline-first functionality
+  fl_chart: ^0.69.0 # Package untuk chart/grafik  # Database for offline-first functionality
   sqflite: ^2.3.0  # Local SQLite database
   path: ^1.8.3  # Path manipulation for database
+  connectivity_plus: ^6.0.5  # Check network connectivity
+  package_info_plus: ^8.0.0  # App version info
+  url_launcher: ^6.3.0  # Launch URLs
   
 dev_dependencies:
   flutter_test:
@@ -70,6 +60,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -78,9 +69,9 @@ dev_dependencies:
 flutter:
 
   # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
+  # included with your application, so that you can use the icons in  # the material Icons class.
   uses-material-design: true
+
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
@@ -106,7 +97,13 @@ flutter:
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
+  #         weight: 700  #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/logo.png"

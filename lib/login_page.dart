@@ -47,92 +47,88 @@ class _LoginPageState extends State<LoginPage> {
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(24.0),
               child: Form(
                 key: _formKey,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[                    // Logo dengan Background Circle
+                  mainAxisAlignment: MainAxisAlignment.center,                  children: <Widget>[                    // Logo dengan Background Circle
                     Container(
-                      width: 130,
-                      height: 130,
+                      width: 120,
+                      height: 120,
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.12),
-                            blurRadius: 25,
-                            offset: const Offset(0, 12),
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
                           ),
                         ],
                       ),
-                      child: Image.asset(
-                        'assets/images/logo.png',
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Icon(
-                            Icons.local_shipping,
-                            size: 64,
-                            color: theme.colorScheme.primary,
-                          );
-                        },
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/images/kirimtrack_logo.png',
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 32),
                     
                     // Title
                     Text(
-                      'KirimTrack',
-                      style: theme.textTheme.displaySmall?.copyWith(
+                      'LogiTrack',
+                      style: theme.textTheme.headlineLarge?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 8),
                     Text(
-                      'Masuk ke Akun Anda',
+                      'Delivery Tracking System',
                       style: theme.textTheme.bodyLarge?.copyWith(
-                        color: Colors.white.withValues(alpha: 0.85),
-                        fontWeight: FontWeight.w500,
+                        color: Colors.white.withOpacity(0.9),
                       ),
                     ),
                     const SizedBox(height: 48),
 
                     // Form Card
                     Container(
-                      padding: const EdgeInsets.all(28),
+                      padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.08),
-                            blurRadius: 30,
-                            offset: const Offset(0, 15),
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
                           ),
                         ],
                       ),
                       child: Column(
-                        children: [
-                          // Email Field
+                        children: [                          // Email Field
                           TextFormField(
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
-                              labelText: 'Email',
+                              hintText: 'Email',
                               prefixIcon: Icon(Icons.email_outlined, color: theme.colorScheme.primary),
+                              filled: true,
+                              fillColor: Colors.grey.shade50,
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
+                                borderRadius: BorderRadius.circular(12),
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: Colors.grey.shade300),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
+                                borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
                               ),
-                              contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -144,19 +140,17 @@ class _LoginPageState extends State<LoginPage> {
                               return null;
                             },
                           ),
-                          const SizedBox(height: 18),
-
-                          // Password Field
+                          const SizedBox(height: 16),                          // Password Field
                           TextFormField(
                             controller: _passwordController,
                             obscureText: !_isPasswordVisible,
                             decoration: InputDecoration(
-                              labelText: 'Password',
+                              hintText: 'Password',
                               prefixIcon: Icon(Icons.lock_outline, color: theme.colorScheme.primary),
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                  color: Colors.grey.shade400,
+                                  color: Colors.grey,
                                 ),
                                 onPressed: () {
                                   setState(() {
@@ -164,18 +158,20 @@ class _LoginPageState extends State<LoginPage> {
                                   });
                                 },
                               ),
+                              filled: true,
+                              fillColor: Colors.grey.shade50,
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
+                                borderRadius: BorderRadius.circular(12),
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
-                                borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide(color: Colors.grey.shade300),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(14),
+                                borderRadius: BorderRadius.circular(12),
                                 borderSide: BorderSide(color: theme.colorScheme.primary, width: 2),
                               ),
-                              contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -187,12 +183,12 @@ class _LoginPageState extends State<LoginPage> {
                               return null;
                             },
                           ),
-                          const SizedBox(height: 28),
+                          const SizedBox(height: 24),
 
                           // Login Button
                           SizedBox(
                             width: double.infinity,
-                            height: 56,
+                            height: 54,
                             child: ElevatedButton(
                               onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
@@ -224,7 +220,7 @@ class _LoginPageState extends State<LoginPage> {
                                 backgroundColor: theme.colorScheme.primary,
                                 foregroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(14),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                                 elevation: 0,
                               ),
@@ -240,7 +236,7 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 24),
 
                     // Register Link
                     Row(
@@ -248,10 +244,7 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         Text(
                           'Belum punya akun? ',
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.85),
-                            fontSize: 14,
-                          ),
+                          style: TextStyle(color: Colors.white.withOpacity(0.9)),
                         ),
                         TextButton(
                           onPressed: () {
@@ -270,7 +263,6 @@ class _LoginPageState extends State<LoginPage> {
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               decoration: TextDecoration.underline,
-                              fontSize: 14,
                             ),
                           ),
                         ),

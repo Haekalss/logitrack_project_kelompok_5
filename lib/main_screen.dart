@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:kirimtrack/efficient_dashboard.dart';
 import 'package:kirimtrack/offline_history_page.dart';
-import 'package:kirimtrack/offline_profile_page.dart';
+import 'package:kirimtrack/profile_page.dart';
 import 'package:kirimtrack/qr_scanner_page.dart';
 import 'package:provider/provider.dart';
 import 'package:kirimtrack/providers/offline_first_delivery_provider.dart';
-import 'package:kirimtrack/delivery_detail_page.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -22,7 +21,7 @@ class _MainScreenState extends State<MainScreen> {
     const TasksPage(),
     const SizedBox.shrink(), // QR Scanner akan dibuka sebagai modal
     const OfflineHistoryPage(),
-    const OfflineProfilePage(),
+    const ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
@@ -62,59 +61,57 @@ class _MainScreenState extends State<MainScreen> {
               offset: const Offset(0, -2),
             ),
           ],
-        ),
-        child: BottomAppBar(
+        ),        child: BottomAppBar(
           shape: const CircularNotchedRectangle(),
-          notchMargin: 8,
+          notchMargin: 6,
           elevation: 0,
-          child: SizedBox(
-            height: 65,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                // Beranda
-                _buildNavItem(
-                  icon: Icons.home_outlined,
-                  activeIcon: Icons.home,
-                  label: 'Beranda',
-                  index: 0,
-                  theme: theme,
-                ),
-                
-                // Tasks
-                _buildNavItem(
-                  icon: Icons.assignment_outlined,
-                  activeIcon: Icons.assignment,
-                  label: 'Tasks',
-                  index: 1,
-                  theme: theme,
-                ),
+          height: 58,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              // Beranda
+              _buildNavItem(
+                icon: Icons.home_outlined,
+                activeIcon: Icons.home,
+                label: 'Beranda',
+                index: 0,
+                theme: theme,
+              ),
 
-                // QR Scanner (Tengah - Floating)
-                const SizedBox(width: 60), // Space untuk floating button
+              // Tasks
+              _buildNavItem(
+                icon: Icons.assignment_outlined,
+                activeIcon: Icons.assignment,
+                label: 'Tasks',
+                index: 1,
+                theme: theme,
+              ),
 
-                // History
-                _buildNavItem(
-                  icon: Icons.history_outlined,
-                  activeIcon: Icons.history,
-                  label: 'History',
-                  index: 3,
-                  theme: theme,
-                ),
+              // QR Scanner (Tengah - Floating)
+              const SizedBox(width: 48), // Space untuk floating button
 
-                // Profile
-                _buildNavItem(
-                  icon: Icons.account_circle_outlined,
-                  activeIcon: Icons.account_circle,
-                  label: 'Profile',
-                  index: 4,
-                  theme: theme,
-                ),
-              ],
-            ),
+              // History
+              _buildNavItem(
+                icon: Icons.history_outlined,
+                activeIcon: Icons.history,
+                label: 'History',
+                index: 3,
+                theme: theme,
+              ),
+
+              // Profile
+              _buildNavItem(
+                icon: Icons.account_circle_outlined,
+                activeIcon: Icons.account_circle,
+                label: 'Profile',
+                index: 4,
+                theme: theme,
+              ),
+            ],
           ),
         ),
-      ),      floatingActionButton: Container(
+      ),
+      floatingActionButton: Container(
         height: 65,
         width: 65,
         decoration: BoxDecoration(
@@ -157,25 +154,25 @@ class _MainScreenState extends State<MainScreen> {
     required ThemeData theme,
   }) {
     final isActive = _currentIndex == index;
-    
-    return InkWell(
+      return InkWell(
       onTap: () => _onItemTapped(index),
       borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               isActive ? activeIcon : icon,
               color: isActive ? theme.colorScheme.primary : Colors.grey.shade600,
-              size: 26,
+              size: 22,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 1),
             Text(
               label,
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 9,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
                 color: isActive ? theme.colorScheme.primary : Colors.grey.shade600,
               ),
@@ -188,19 +185,31 @@ class _MainScreenState extends State<MainScreen> {
 }
 
 // Tasks Page - Halaman untuk menampilkan daftar tugas
-class TasksPage extends StatelessWidget {
+class TasksPage extends StatefulWidget {
   const TasksPage({super.key});
 
+  @override
+  State<TasksPage> createState() => _TasksPageState();
+}
+
+class _TasksPageState extends State<TasksPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<OfflineFirstDeliveryProvider>(
+        context,
+        listen: false,
+      ).fetchTasks();
+    });
+  }
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Daftar Tugas',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Daftar Tugas'),
         centerTitle: true,
         flexibleSpace: Container(
           decoration: BoxDecoration(
@@ -212,13 +221,14 @@ class TasksPage extends StatelessWidget {
             ),
           ),
         ),
-      ),      body: Consumer<OfflineFirstDeliveryProvider>(
+      ),
+      body: Consumer<OfflineFirstDeliveryProvider>(
         builder: (context, provider, child) {
-          if (provider.isLoading && provider.tasks.isEmpty) {
+          if (provider.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
           
-          if (provider.error != null && provider.tasks.isEmpty) {
+          if (provider.error != null) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
@@ -239,7 +249,7 @@ class TasksPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      provider.error ?? 'Unknown error',
+                      provider.error!,
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyMedium,
                     ),
@@ -315,7 +325,9 @@ class TasksPage extends StatelessWidget {
                 ),
               ),
             );
-          }          return RefreshIndicator(
+          }
+
+          return RefreshIndicator(
             onRefresh: () => provider.fetchTasks(),
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
@@ -343,7 +355,8 @@ class TasksPage extends StatelessWidget {
                             ? Colors.green.shade600 
                             : Colors.orange.shade600,
                         size: 32,
-                      ),                    ),
+                      ),
+                    ),
                     title: Text(
                       task.title,
                       style: theme.textTheme.titleMedium?.copyWith(
@@ -355,15 +368,6 @@ class TasksPage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (task.description != null) ...[
-                            Text(
-                              task.description!,
-                              style: theme.textTheme.bodySmall,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 4),
-                          ],
                           Row(
                             children: [
                               Icon(
@@ -372,16 +376,14 @@ class TasksPage extends StatelessWidget {
                                 color: theme.colorScheme.onSurface.withOpacity(0.6),
                               ),
                               const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  'ID: ${task.id}',
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurface.withOpacity(0.6),
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
+                              Text(
+                                'ID: ${task.id}',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurface
+                                      .withOpacity(0.6),
                                 ),
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: 16),
                               Icon(
                                 isCompleted ? Icons.done_all : Icons.schedule,
                                 size: 16,
@@ -401,19 +403,27 @@ class TasksPage extends StatelessWidget {
                               ),
                             ],
                           ),
+                          if (task.description != null) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              task.description!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
                         ],
                       ),
-                    ),                    trailing: Icon(
+                    ),
+                    trailing: Icon(
                       Icons.arrow_forward_ios,
                       color: theme.colorScheme.primary,
+                      size: 18,
                     ),
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DeliveryDetailPage(taskId: task.id),
-                        ),
-                      );
+                      // Navigate to detail page
                     },
                   ),
                 );

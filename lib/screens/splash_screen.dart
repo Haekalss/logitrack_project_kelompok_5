@@ -146,8 +146,8 @@ class _SplashScreenState extends State<SplashScreen>
                   ScaleTransition(
                     scale: _logoAnimation,
                     child: Container(
-                      width: 120,
-                      height: 120,
+                      width: 140,
+                      height: 140,
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
@@ -159,18 +159,11 @@ class _SplashScreenState extends State<SplashScreen>
                           ),
                         ],
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(15),
+                      padding: const EdgeInsets.all(15),
+                      child: ClipOval(
                         child: Image.asset(
-                          'assets/images/logo.png',
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Icon(
-                              Icons.local_shipping,
-                              size: 60,
-                              color: AppTheme.primaryOrange,
-                            );
-                          },
+                          'assets/images/kirimtrack_logo.png',
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),

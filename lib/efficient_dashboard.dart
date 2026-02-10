@@ -50,8 +50,7 @@ class _EfficientDashboardState extends State<EfficientDashboard> {
             padding: const EdgeInsets.only(top: 12, left: 16, right: 16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
+              crossAxisAlignment: CrossAxisAlignment.center,              children: [
                 SizedBox(
                   height: 40,
                   child: Image.asset(

@@ -22,7 +22,6 @@ class OfflineFirstDeliveryProvider with ChangeNotifier {
   
   int get pendingTasksCount => 
       _tasks.where((task) => !task.isCompleted).length;
-
   /// Fetch tasks - OFFLINE FIRST
   /// Akan selalu load dari database lokal dulu, lalu sync background
   Future<void> fetchTasks() async {
@@ -30,13 +29,18 @@ class OfflineFirstDeliveryProvider with ChangeNotifier {
     _error = null;
     
     try {
-      // Offline-first: Load dari database lokal dulu
-      _tasks = await _apiService.fetchDeliveryTasks();
+      // Untuk web, langsung gunakan dummy data
+      // Karena sqflite tidak support web
+      try {
+        _tasks = await _apiService.fetchDeliveryTasks();
+      } catch (e) {
+        print('⚠️ Database error (expected on web): $e');
+        print('📦 Using dummy data instead...');
+      }
       
-      // Jika tidak ada data, tambah dummy data
+      // Jika tidak ada data atau ada error, tambah dummy data
       if (_tasks.isEmpty) {
         await _insertDummyData();
-        _tasks = await _apiService.fetchDeliveryTasks();
       }
       
       notifyListeners();
@@ -45,6 +49,11 @@ class OfflineFirstDeliveryProvider with ChangeNotifier {
     } catch (e) {
       _error = 'Error loading tasks: $e';
       print('❌ Error in fetchTasks: $e');
+      // Tetap load dummy data meskipun ada error
+      if (_tasks.isEmpty) {
+        await _insertDummyData();
+        notifyListeners();
+      }
     } finally {
       _setLoading(false);
     }
