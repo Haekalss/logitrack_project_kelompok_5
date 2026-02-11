@@ -6,6 +6,7 @@ class AppTheme {
   static const Color primaryOrange = Color(
     0xFF1E40AF,
   ); // Dark blue - professional medium-dark
+  static const Color primaryBlue = Color(0xFF1E40AF); // Alias for primaryOrange
   static const Color secondaryOrange = Color(0xFF3B82F6); // Brighter blue
   static const Color accentOrange = Color(0xFF60A5FA);
   static const Color successGreen = Color(0xFF10B981);
